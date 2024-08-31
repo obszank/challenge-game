@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-Based Terminal Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #gameOutput {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+        }
+        input[type="text"] {
+            padding: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web-Based Terminal Game</h1>
+    <div id="gameOutput">Welcome to the game! Enter a command.</div>
+    <form id="commandForm">
+        <input type="text" id="commandInput" placeholder="Type your command here" required>
+        <button type="submit">Enter</button>
+    </form>
+
+    <script>
+        class Player {
+            constructor() {
+                this.x = 1;
+                this.y = 1;
+            }
+
+            move(direction) {
+                if (direction === "up" && this.y > 0) {
+                    this.y -= 1;
+                } else if (direction === "down" && this.y < 4) {
+                    this.y += 1;
+                } else if (direction === "left" && this.x > 0) {
+                    this.x -= 1;
+                } else if (direction === "right" && this.x < 4) {
+                    this.x += 1;
+                }
+            }
+        }
+
+        class Character {
+            constructor(name, x, y, challenge) {
+                this.name = name;
+                this.x = x;
+                this.y = y;
+                this.challenge = challenge;
+            }
+
+            interact() {
+                alert(`You are interacting with ${this.name}.`);
+                this.challenge();
+            }
+        }
+
+        function challenge_1() {
+            let count = 0;
+            const startTime = new Date().getTime();
+            alert("Press ENTER 10 times in 10 seconds!");
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Enter") {
+                    count++;
+                    if (count >= 10 && (new Date().getTime() - startTime) < 10000) {
+                        alert("Challenge Completed!");
+                        document.removeEventListener('keydown', this);
+                    }
+                }
+            });
+        }
+
+        const player = new Player();
+        const character = new Character("Character 1", 2, 2, challenge_1);
+
+        document.getElementById('commandForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const command = document.getElementById('commandInput').value.trim().toLowerCase();
+            let result = "";
+
+            if (command === "left" || command === "right" || command === "up" || command === "down") {
+                player.move(command);
+                result = `You moved ${command}. Position: (${player.x}, ${player.y})`;
+            } else if (command === "i") {
+                if (player.x === character.x && player.y === character.y) {
+                    character.interact();
+                } else {
+                    result = "No one is here to interact with.";
+                }
+            } else {
+                result = "Invalid command.";
+            }
+
+            document.getElementById('gameOutput').innerText = result;
+            document.getElementById('commandInput').value = ''; // Clear input field
+        });
+    </script>
+</body>
+</html>
