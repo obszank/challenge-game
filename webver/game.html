@@ -6,27 +6,51 @@
     <title>Web-Based Terminal Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #00FF00;
             text-align: center;
             padding: 20px;
         }
-        #gameOutput {
-            margin: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 50px;
+        #terminal {
+            background-color: #000;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+            padding: 20px;
+            width: 80%;
+            margin: 0 auto;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            text-align: left;
         }
-        input[type="text"] {
-            padding: 5px;
-            width: 300px;
+        #commandInput {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            background-color: #000;
+            color: #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #00FF00;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
         }
     </style>
 </head>
 <body>
     <h1>Web-Based Terminal Game</h1>
-    <div id="gameOutput">Welcome to the game! Enter a command.</div>
+    <div id="terminal">Welcome to the game! Enter a command below.</div>
     <form id="commandForm">
-        <input type="text" id="commandInput" placeholder="Type your command here" required>
+        <input type="text" id="commandInput" placeholder="Type your command here" required autocomplete="off">
         <button type="submit">Enter</button>
     </form>
 
@@ -59,7 +83,7 @@
             }
 
             interact() {
-                alert(`You are interacting with ${this.name}.`);
+                appendToTerminal(`You are interacting with ${this.name}.`);
                 this.challenge();
             }
         }
@@ -67,16 +91,22 @@
         function challenge_1() {
             let count = 0;
             const startTime = new Date().getTime();
-            alert("Press ENTER 10 times in 10 seconds!");
+            appendToTerminal("Press ENTER 10 times in 10 seconds!");
             document.addEventListener('keydown', function(event) {
                 if (event.key === "Enter") {
                     count++;
                     if (count >= 10 && (new Date().getTime() - startTime) < 10000) {
-                        alert("Challenge Completed!");
+                        appendToTerminal("Challenge Completed!");
                         document.removeEventListener('keydown', this);
                     }
                 }
             });
+        }
+
+        function appendToTerminal(text) {
+            const terminal = document.getElementById('terminal');
+            terminal.innerText += `\n${text}`;
+            terminal.scrollTop = terminal.scrollHeight;  // Scroll to the bottom
         }
 
         const player = new Player();
@@ -85,6 +115,7 @@
         document.getElementById('commandForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const command = document.getElementById('commandInput').value.trim().toLowerCase();
+            appendToTerminal(`> ${command}`);
             let result = "";
 
             if (command === "left" || command === "right" || command === "up" || command === "down") {
@@ -100,7 +131,7 @@
                 result = "Invalid command.";
             }
 
-            document.getElementById('gameOutput').innerText = result;
+            appendToTerminal(result);
             document.getElementById('commandInput').value = ''; // Clear input field
         });
     </script>
